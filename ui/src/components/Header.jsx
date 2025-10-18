@@ -1,10 +1,30 @@
 import React from 'react';
 
-export default function Header({ title, tabs = [], activeTab, onTabChange, onSearch, onImport, onExportJSON, onExportNamespacedJSON, onExportXML }) {
+export default function Header({ 
+  title, 
+  tabs = [], 
+  activeTab, 
+  onTabChange, 
+  onSearch, 
+  onImport, 
+  onExportJSON, 
+  onExportNamespacedJSON, 
+  onExportXML, 
+  onBackToHome,
+  showBackButton = false 
+}) {
   return (
     <header className="header">
       <div className="header-left">
-        <button className="back-btn" title="Back">⤺</button>
+        {showBackButton && (
+          <button 
+            className="back-btn" 
+            title="Back to Home"
+            onClick={onBackToHome}
+          >
+            ⤺
+          </button>
+        )}
         <div className="title-block">
           <h1 className="title">{title}</h1>
           <div className="tabs">
