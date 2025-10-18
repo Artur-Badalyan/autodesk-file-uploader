@@ -1,4 +1,12 @@
 import React from 'react';
+import {
+  SingleInput,
+  OptionsInput,
+  StartsWithInput,
+  EndsWithInput,
+  RegexPatternInput,
+  ComplexInput
+} from './inputModes';
 
 /**
  * Props:
@@ -19,6 +27,125 @@ export default function MaterialApplicability({
   materialOptions = []
 }) {
   const update = (patch) => onChange(patch);
+
+  // Comprehensive material list based on IFC materials and common building materials
+  const MATERIAL_LIST = [
+    // Metals
+    'Steel',
+    'Aluminum',
+    'Stainless Steel',
+    'Cast Iron',
+    'Wrought Iron',
+    'Copper',
+    'Brass',
+    'Bronze',
+    'Galvanized Steel',
+    'Carbon Steel',
+    
+    // Concrete & Masonry
+    'Concrete',
+    'Reinforced Concrete',
+    'Precast Concrete',
+    'Lightweight Concrete',
+    'High-Strength Concrete',
+    'Brick',
+    'Clay Brick',
+    'Concrete Block',
+    'Stone',
+    'Natural Stone',
+    'Limestone',
+    'Granite',
+    'Marble',
+    'Sandstone',
+    'Mortar',
+    
+    // Wood & Timber
+    'Wood',
+    'Hardwood',
+    'Softwood',
+    'Plywood',
+    'OSB (Oriented Strand Board)',
+    'MDF (Medium Density Fiberboard)',
+    'Particleboard',
+    'Laminated Veneer Lumber',
+    'Glulam',
+    'Cross-Laminated Timber (CLT)',
+    
+    // Glass
+    'Glass',
+    'Tempered Glass',
+    'Laminated Glass',
+    'Double Glazed Glass',
+    'Low-E Glass',
+    'Tinted Glass',
+    'Safety Glass',
+    
+    // Plastics & Polymers
+    'PVC',
+    'HDPE',
+    'Polystyrene',
+    'Polycarbonate',
+    'Acrylic',
+    'Fiberglass',
+    'EPDM',
+    'TPO',
+    'Polyurethane',
+    
+    // Insulation Materials
+    'Mineral Wool',
+    'Fiberglass Insulation',
+    'Foam Insulation',
+    'Cellulose Insulation',
+    'Spray Foam',
+    'Rigid Foam',
+    'Reflective Insulation',
+    
+    // Roofing Materials
+    'Asphalt Shingles',
+    'Metal Roofing',
+    'Clay Tiles',
+    'Concrete Tiles',
+    'Slate',
+    'EPDM Membrane',
+    'TPO Membrane',
+    'Built-up Roofing',
+    'Modified Bitumen',
+    
+    // Finishes & Coatings
+    'Paint',
+    'Stain',
+    'Varnish',
+    'Epoxy',
+    'Ceramic Tile',
+    'Porcelain Tile',
+    'Natural Stone Tile',
+    'Carpet',
+    'Vinyl Flooring',
+    'Linoleum',
+    'Hardwood Flooring',
+    'Laminate Flooring',
+    'Wallpaper',
+    'Fabric',
+    
+    // Other Materials
+    'Gypsum',
+    'Drywall',
+    'Plaster',
+    'Cement',
+    'Aggregate',
+    'Sand',
+    'Gravel',
+    'Soil',
+    'Rubber',
+    'Cork',
+    'Bamboo',
+    'Composite',
+    'Unknown',
+    'Other'
+  ];
+
+  // Combine provided options with default material list, removing duplicates
+  const allMaterialOptions = [...new Set([...materialOptions, ...MATERIAL_LIST])].sort();
 
   const INPUT_MODES = [
     { value: 'single', label: 'Single', icon: 'T', description: 'Simple text input' },
@@ -84,6 +211,31 @@ export default function MaterialApplicability({
     );
   };
 
+  const renderInputField = (fieldName, placeholder, options = [], type = 'text') => {
+    const currentMode = getCurrentInputMode(fieldName);
+    const fieldValue = item[fieldName];
+    
+    const handleFieldChange = (newValue) => {
+      update({ [fieldName]: newValue });
+    };
+
+    switch (currentMode) {
+      case 'options':
+        return <OptionsInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'startsWith':
+        return <StartsWithInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'endsWith':
+        return <EndsWithInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'regex':
+        return <RegexPatternInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'complex':
+        return <ComplexInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'single':
+      default:
+        return <SingleInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} options={options} type={type} />;
+    }
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
       {/* Header */}
@@ -123,14 +275,7 @@ export default function MaterialApplicability({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Material</label>
           <div className="flex gap-2">
-            <select 
-              value={item.material || ''} 
-              onChange={(e) => update({ material: e.target.value })} 
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-            >
-              <option value="">Select material...</option>
-              {materialOptions.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
+            {renderInputField('material', 'Select material...', allMaterialOptions, 'select')}
             {renderInputModeDropdown('material')}
           </div>
         </div>

@@ -1,4 +1,12 @@
 import React from 'react';
+import {
+  SingleInput,
+  OptionsInput,
+  StartsWithInput,
+  EndsWithInput,
+  RegexPatternInput,
+  ComplexInput
+} from './inputModes';
 
 /**
  * Props:
@@ -84,6 +92,31 @@ export default function EntityApplicability({
     );
   };
 
+  const renderInputField = (fieldName, placeholder, options = [], type = 'text') => {
+    const currentMode = getCurrentInputMode(fieldName);
+    const fieldValue = item[fieldName];
+    
+    const handleFieldChange = (newValue) => {
+      update({ [fieldName]: newValue });
+    };
+
+    switch (currentMode) {
+      case 'options':
+        return <OptionsInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'startsWith':
+        return <StartsWithInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'endsWith':
+        return <EndsWithInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'regex':
+        return <RegexPatternInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'complex':
+        return <ComplexInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'single':
+      default:
+        return <SingleInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} options={options} type={type} />;
+    }
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
       {/* Header */}
@@ -123,14 +156,7 @@ export default function EntityApplicability({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Entity</label>
           <div className="flex gap-2">
-            <select 
-              value={item.entity || ''} 
-              onChange={(e) => update({ entity: e.target.value })} 
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-            >
-              <option value="">Select entity...</option>
-              {entityOptions.map((en) => <option key={en} value={en}>{en}</option>)}
-            </select>
+            {renderInputField('entity', 'Select entity...', entityOptions, 'select')}
             {renderInputModeDropdown('entity')}
           </div>
         </div>
@@ -140,12 +166,7 @@ export default function EntityApplicability({
             Predefined Type <span className="text-sm text-gray-500 font-normal">(optional)</span>
           </label>
           <div className="flex gap-2">
-            <input 
-              value={item.predefinedType || ''} 
-              onChange={(e) => update({ predefinedType: e.target.value })} 
-              placeholder="Enter predefined type"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-            />
+            {renderInputField('predefinedType', 'Enter predefined type')}
             {renderInputModeDropdown('predefinedType')}
           </div>
         </div>

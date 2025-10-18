@@ -1,5 +1,13 @@
 import React from 'react';
 import DATA_TYPES from '../../data/dataTypes';
+import {
+  SingleInput,
+  OptionsInput,
+  StartsWithInput,
+  EndsWithInput,
+  RegexPatternInput,
+  ComplexInput
+} from './inputModes';
 
 /**
  * Props:
@@ -86,6 +94,31 @@ export default function PropertyApplicability({
     );
   };
 
+  const renderInputField = (fieldName, placeholder, options = [], type = 'text') => {
+    const currentMode = getCurrentInputMode(fieldName);
+    const fieldValue = item[fieldName];
+    
+    const handleFieldChange = (newValue) => {
+      update({ [fieldName]: newValue });
+    };
+
+    switch (currentMode) {
+      case 'options':
+        return <OptionsInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'startsWith':
+        return <StartsWithInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'endsWith':
+        return <EndsWithInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'regex':
+        return <RegexPatternInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'complex':
+        return <ComplexInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} />;
+      case 'single':
+      default:
+        return <SingleInput value={fieldValue} onChange={handleFieldChange} placeholder={placeholder} options={options} type={type} />;
+    }
+  };
+
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
       {/* Header */}
@@ -125,14 +158,7 @@ export default function PropertyApplicability({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Property Name</label>
           <div className="flex gap-2">
-            <select
-              value={item.propertyName || ''}
-              onChange={(e) => update({ propertyName: e.target.value })}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-            >
-              <option value="">Select property name...</option>
-              {nameOptions.map((n) => <option key={n} value={n}>{n}</option>)}
-            </select>
+            {renderInputField('propertyName', 'Select property name...', nameOptions, 'select')}
             {renderInputModeDropdown('propertyName')}
           </div>
         </div>
@@ -140,12 +166,7 @@ export default function PropertyApplicability({
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Property Set</label>
           <div className="flex gap-2">
-            <input
-              value={item.propertySet || ''}
-              onChange={(e) => update({ propertySet: e.target.value })}
-              placeholder="Enter property set name"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-            />
+            {renderInputField('propertySet', 'Enter property set name')}
             {renderInputModeDropdown('propertySet')}
           </div>
         </div>
@@ -153,25 +174,13 @@ export default function PropertyApplicability({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Data Type</label>
-            <select
-              value={item.dataType || ''}
-              onChange={(e) => update({ dataType: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-            >
-              <option value="">Select data type...</option>
-              {DATA_TYPES.map((dt) => <option key={dt} value={dt}>{dt}</option>)}
-            </select>
+            {renderInputField('dataType', 'Select data type...', DATA_TYPES, 'select')}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Value (optional)</label>
             <div className="flex gap-2">
-              <input
-                value={item.value || ''}
-                onChange={(e) => update({ value: e.target.value })}
-                placeholder="Enter value"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-              />
+              {renderInputField('value', 'Enter value')}
               {renderInputModeDropdown('value')}
             </div>
           </div>
