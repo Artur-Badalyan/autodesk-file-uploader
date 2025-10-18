@@ -300,7 +300,6 @@ The template editor allows you to create dynamic field values using variables:
 ## Dependencies
 
 - **React 19.2.0** - UI framework
-- **react-beautiful-dnd 13.1.1** - Drag and drop functionality
 - **react-select 5.8.0** - Enhanced select components
 - **@testing-library/react 16.3.0** - Testing utilities
 

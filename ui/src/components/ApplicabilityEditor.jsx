@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { makeId } from './utils';
 
 // импорт компонентов, которые вы уже добавили в src/components/applicabilities/
@@ -77,16 +76,6 @@ export default function ApplicabilityEditor({ value = [], onChange = () => {}, f
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  const handleDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const items = Array.from(value);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    onChange(items);
-  };
 
   const renderItem = (item) => {
     const commonProps = {
@@ -193,58 +182,32 @@ export default function ApplicabilityEditor({ value = [], onChange = () => {}, f
         </div>
       </div>
 
-      {/* Drag & Drop Area */}
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="applicability-list">
-          {(provided, snapshot) => (
-            <div 
-              className={`transition-all duration-200 ${
-                snapshot.isDraggingOver 
-                  ? 'bg-blue-50 border-2 border-dashed border-blue-300 rounded-xl' 
-                  : ''
-              }`}
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              {filtered.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-12 px-6 bg-white border-2 border-dashed border-gray-300 rounded-xl">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No applicability items yet</h3>
-                  <p className="text-gray-500 text-center max-w-md mb-4">
-                    Add applicability items from the sidebar or use the buttons above to get started with your specification.
-                  </p>
-                </div>
-              )}
-              
-              <div className="grid gap-6">
-                {filtered.map((item, index) => (
-                  <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`transition-all duration-200 ${
-                          snapshot.isDragging 
-                            ? 'rotate-2 scale-105 shadow-xl z-50' 
-                            : 'hover:shadow-lg'
-                        }`}
-                      >
-                        {renderItem(item)}
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
+      <div className="mb-6" />
+      <div>
+        <div className={`transition-all duration-200`}>
+          {filtered.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 px-6 bg-white border-2 border-dashed border-gray-300 rounded-xl">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
               </div>
-              {provided.placeholder}
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No applicability items yet</h3>
+              <p className="text-gray-500 text-center max-w-md mb-4">
+                Add applicability items from the sidebar or use the buttons above to get started with your specification.
+              </p>
             </div>
           )}
-        </Droppable>
-      </DragDropContext>
+
+          <div className="grid gap-6">
+            {filtered.map((item) => (
+              <div key={item.id} className="transition-all duration-200 hover:shadow-lg">
+                {renderItem(item)}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
