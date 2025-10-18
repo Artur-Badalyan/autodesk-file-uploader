@@ -12,6 +12,7 @@ import React from 'react';
 export default function EntityApplicability({
   item = {},
   onChange = () => {},
+  onRemove = () => {},
   inputModeDropdowns = {},
   onInputModeToggle = () => {},
   onInputModeClose = () => {},
@@ -49,25 +50,32 @@ export default function EntityApplicability({
     const currentMode = getCurrentInputMode(fieldName);
     
     return (
-      <div className="input-mode-wrapper">
+      <div className="relative input-mode-wrapper">
         <button 
-          className="tmpl-btn" 
+          className="flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 transition-colors duration-200" 
           onClick={() => onInputModeToggle(fieldName)}
           title={`Current mode: ${INPUT_MODES.find(m => m.value === currentMode)?.label || 'Single'}`}
         >
           {getCurrentModeIcon(fieldName)}
         </button>
         {isOpen && (
-          <div className="input-mode-dropdown">
+          <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden">
             {INPUT_MODES.map(mode => (
               <div
                 key={mode.value}
-                className={`input-mode-option ${mode.value === currentMode ? 'active' : ''}`}
+                className={`flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors duration-200 ${
+                  mode.value === currentMode ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                }`}
                 onClick={() => handleInputModeSelect(fieldName, mode.value)}
                 title={mode.description}
               >
-                <span className="input-mode-icon">{mode.icon}</span>
-                <span className="input-mode-label">{mode.label}</span>
+                <span className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded text-sm font-medium">
+                  {mode.icon}
+                </span>
+                <div>
+                  <div className="font-medium text-gray-900">{mode.label}</div>
+                  <div className="text-sm text-gray-500">{mode.description}</div>
+                </div>
               </div>
             ))}
           </div>
@@ -77,34 +85,67 @@ export default function EntityApplicability({
   };
 
   return (
-    <div className="card applicability entity-applicability">
-      <div className="card-head">
-        <div>
-          <div className="card-type">Entity Applicability</div>
-          <div className="card-sub">The entity must ??.</div>
+    <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200">
+      {/* Header */}
+      <div className="flex items-start justify-between p-6 pb-4">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-lg flex items-center justify-center shadow-md">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Entity Applicability</h3>
+            <p className="text-sm text-gray-500">Define entity type and predefined constraints</p>
+          </div>
         </div>
 
-        <div className="card-actions">
-          <button className="icon" title="Actions">⋮</button>
+        <div className="flex items-center space-x-2">
+          <button className="text-gray-400 hover:text-gray-600 transition-colors duration-200" title="More actions">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+            </svg>
+          </button>
+          <button
+            onClick={onRemove}
+            className="text-gray-400 hover:text-red-500 transition-colors duration-200"
+            title="Remove applicability"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       </div>
 
-      <div className="card-body">
-        <div className="row">
-          <label>Entity</label>
-          <div style={{ display: 'flex', gap: 8, width: '100%' }}>
-            <select value={item.entity || ''} onChange={(e) => update({ entity: e.target.value })} style={{ flex: 1 }}>
-              <option value="">Select...</option>
+      {/* Body */}
+      <div className="px-6 pb-6 space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Entity</label>
+          <div className="flex gap-2">
+            <select 
+              value={item.entity || ''} 
+              onChange={(e) => update({ entity: e.target.value })} 
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+            >
+              <option value="">Select entity...</option>
               {entityOptions.map((en) => <option key={en} value={en}>{en}</option>)}
             </select>
             {renderInputModeDropdown('entity')}
           </div>
         </div>
 
-        <div className="row">
-          <label>Predefined Type <span className="optional">optional</span></label>
-          <div style={{ display: 'flex', gap: 8, width: '100%' }}>
-            <input value={item.predefinedType || ''} onChange={(e) => update({ predefinedType: e.target.value })} style={{ flex: 1 }} />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Predefined Type <span className="text-sm text-gray-500 font-normal">(optional)</span>
+          </label>
+          <div className="flex gap-2">
+            <input 
+              value={item.predefinedType || ''} 
+              onChange={(e) => update({ predefinedType: e.target.value })} 
+              placeholder="Enter predefined type"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+            />
             {renderInputModeDropdown('predefinedType')}
           </div>
         </div>

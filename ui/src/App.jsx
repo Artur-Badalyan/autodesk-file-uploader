@@ -275,7 +275,7 @@ export default function App() {
   // Home view
   if (currentView === 'home') {
     return (
-      <div className="app-shell">
+      <div className="min-h-screen bg-gray-50">
         <Home
           specifications={specifications}
           onCreateNew={handleCreateNew}
@@ -302,7 +302,7 @@ export default function App() {
   };
 
   return (
-    <div className="app-shell">
+    <div className="min-h-screen bg-gray-50">
       <Header
         title={currentSpec.title}
         tabs={['All', 'Applicability', 'Requirements']}
@@ -317,8 +317,8 @@ export default function App() {
         showBackButton={true}
       />
 
-      <div className="layout">
-        <main className="main-col">
+      <div className="flex h-[calc(100vh-4rem)]">
+        <main className="flex-1 overflow-auto">
           <ApplicabilityEditor
             value={currentSpec.applicability}
             onChange={setApplicability}
@@ -327,7 +327,7 @@ export default function App() {
           />
         </main>
 
-        <aside className="sidebar-col">
+        <aside className="w-80 xl:w-96 border-l border-gray-200 bg-white p-6 overflow-auto">
           <Sidebar
             spec={specForSidebar}
             onSpecChange={setSpec}
