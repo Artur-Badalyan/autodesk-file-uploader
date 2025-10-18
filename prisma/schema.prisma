@@ -1,0 +1,27 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_CLIENT_DATABASE_URL")
+}
+
+
+model Files {
+  id            String @id @default(uuid())
+  bucketKey     String
+  objectId      String @unique
+  manifestUrn   String?
+  filename      String
+  filepath      String
+  mimetype      String
+  size          Int
+  uploadedAt    DateTime @default(now()) @map("uploaded_at")
+
+  @@map("files")
+}
+
